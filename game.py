@@ -14,7 +14,7 @@ import random
 
 # Initialize Pygame
 pygame.init()
-pygame.display.set_caption('Make School Starter Game!')
+pygame.display.set_caption('Get Big')
 
 ################################################################################
 # VARIABLES
@@ -26,6 +26,13 @@ SCREEN_HEIGHT = 500
 
 CHARACTER_WIDTH = 40
 CHARACTER_HEIGHT = 40
+
+ENEMY_WIDTH = 40
+ENEMY_HEIGHT = 40
+enemy_dead=False
+
+player_square_size=50
+AI_square_size=50
 
 # Color constants
 BLACK = (0, 0, 0)
@@ -40,17 +47,31 @@ player_y = 50
 
 # Target Variables
 target_x = 250
-target_y = 0
+target_y = 400
 
 # TODO: Add variables for the "enemy" character
+points = 0
 
 # Other variables
-velocity = 3
+velocity = 10
+enemy_velocity = 6
 points = 0
+enemy_points = 0
 
 # Set up the drawing window
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
+circles = []
+
+class Circle:
+    def __init__(self):
+        self.y = random.randint(30,480)
+        self.x = random.randint(30,480)
+        self.pos = (self.x, self.y)
+        self.color = GREEN
+        self.size = 10
+    def draw(self):
+        pygame.draw.circle(screen, self.color, self.pos, self.size)
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -73,20 +94,34 @@ def draw_text(text, color, font_size, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
 
+
+      #if event.key == K_a:
+
 ################################################################################
 # GAME LOOP
 ################################################################################
+
+for i in range(30):
+    sizes = [10,15,20]
+    current_circle=Circle()
+    current_circle.size=random.choice(sizes)
+    circles.append(current_circle)
 
 # Run until the user asks to quit
 running = True
 while running:
     # Advance the clock
+
     pygame.time.delay(20)
 
     # Did the user click the window close button?
+    keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    #random.choose(circle)
+    #dx, dy = (circlex - ax, circley - ay)
 
     keys = pygame.key.get_pressed()
 
@@ -101,38 +136,46 @@ while running:
         player_y += velocity
 
     # Update the target
-    target_y += velocity
+    #target_y += velocity
 
     # TODO: Update the enemy's y position based on its velocity
 
     # If target went off the screen, reset it
     if target_y > SCREEN_HEIGHT: 
         target_y = 0
-        target_x = random.random() * (SCREEN_WIDTH - CHARACTER_WIDTH)
+        target_x = (SCREEN_WIDTH - CHARACTER_WIDTH)
 
     # TODO: If enemy went off the screen, reset it
 
     # If player collides with target, reset it & increment points
     if is_colliding(player_x, player_y, target_x, target_y, CHARACTER_WIDTH, CHARACTER_HEIGHT):
-        points += 1
-        target_y = 0
-        target_x = random.random() * (SCREEN_WIDTH - CHARACTER_WIDTH)
-
+        #target_y = 0
+        #target_x = (SCREEN_WIDTH - CHARACTER_WIDTH)
+        CHARACTER_WIDTH+=enemy_points
+        CHARACTER_HEIGHT+=enemy_points
+        if(points==enemy_points):
+            enemy_dead=True
+    
     # TODO: If player collides with enemy, reset it & set points to 0
-
+    
     # Fill screen with white
     screen.fill(WHITE)
+    
+    for circle in circles:
+        circle.draw()
 
     # Draw the player as a blue square
     pygame.draw.rect(screen, BLUE, (player_x, player_y, CHARACTER_WIDTH, CHARACTER_HEIGHT))
 
     # Draw the target as a green square
-    pygame.draw.rect(screen, GREEN, (target_x, target_y, CHARACTER_WIDTH, CHARACTER_HEIGHT))
-
+    if enemy_dead==False:
+        pygame.draw.rect(screen, RED, (target_x, target_y, ENEMY_WIDTH, ENEMY_HEIGHT))
+    elif enemy_dead==True:
+        pass
     # TODO: Draw the enemy as a red square
 
     # Draw the points
-    draw_text(text=f'Points: {points}', color=BLACK, font_size=24, x=20, y=20)
+    draw_text(text=f'Score: {points}', color=BLACK, font_size=24, x=20, y=20)
 
     # Update the game display
     pygame.display.update()
