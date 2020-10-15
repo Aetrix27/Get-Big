@@ -153,7 +153,7 @@ while running:
         #target_x = (SCREEN_WIDTH - CHARACTER_WIDTH)
         CHARACTER_WIDTH+=enemy_points
         CHARACTER_HEIGHT+=enemy_points
-        if(points==enemy_points):
+        if(points>enemy_points):
             enemy_dead=True
     
     # TODO: If player collides with enemy, reset it & set points to 0
@@ -163,6 +163,22 @@ while running:
     
     for circle in circles:
         circle.draw()
+    
+    for circle in circles:
+        if is_colliding(player_x, player_y, circle.x, circle.y, CHARACTER_WIDTH, CHARACTER_HEIGHT):
+            circles.remove(circle)
+            if circle.size == 10:
+                CHARACTER_WIDTH+=2
+                CHARACTER_HEIGHT+=2
+                points += 2
+            elif circle.size == 15:
+                CHARACTER_WIDTH+=5
+                CHARACTER_HEIGHT+=5
+                points += 5
+            elif circle.size == 20:
+                CHARACTER_WIDTH+=10
+                CHARACTER_HEIGHT+=10
+                points += 10
 
     # Draw the player as a blue square
     pygame.draw.rect(screen, BLUE, (player_x, player_y, CHARACTER_WIDTH, CHARACTER_HEIGHT))
