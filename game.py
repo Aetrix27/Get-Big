@@ -1,4 +1,4 @@
-
+import time
 import pygame
 import random
 
@@ -10,17 +10,18 @@ pygame.display.set_caption('Get Big')
 # VARIABLES
 ################################################################################
 
-# Constants
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 500
+clock = pygame.time.Clock()
 
+# Constants
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
 CHARACTER_WIDTH = 40
 CHARACTER_HEIGHT = 40
-
 ENEMY_WIDTH = 40
 ENEMY_HEIGHT = 40
 enemy_dead = False
-
+player_wins = False
+enemy_wins = False
 player_square_size=50
 AI_square_size=50
 
@@ -48,7 +49,6 @@ enemy_velocity = 10
 points = 0
 enemy_points = 0
 
-# Set up the drawing window
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
 circles = []
@@ -60,13 +60,27 @@ class Circle:
         self.pos = (self.x, self.y)
         self.color = GREEN
         self.size = 10
+
     def draw(self):
         pygame.draw.circle(screen, self.color, self.pos, self.size)
- 
+
+class TextBox:
+    def __init__(self):
+        self.position_x = 500
+        self.position_y = 200
+        self.size_height = 100
+        self.size_width = 200
+        self.inner_color = WHITE
+        self.rect = pygame.Rect(self.position_x,self.position_y,self.size_width,self.size_height)
+
+    def display(self, screen):
+        pygame.draw.rect(screen, self.inner_color, (self.position_x, self.position_y, self.size_width, self.size_height))
+
+
 ################################################################################
 # HELPER FUNCTIONS
 ################################################################################
-
+        
 def is_colliding(x1, y1, x2, y2, width, height, width2, height2):
     """Returns True if two shapes are colliding, or False otherwise"""
     # If one rectangle is on left side of the other 
@@ -84,8 +98,29 @@ def draw_text(text, color, font_size, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
 
-      #if event.key == K_a:
+intro = True
+myTextBox = TextBox()
+boxes = [myTextBox]
 
+while intro:
+    for event in pygame.event.get():
+        print(event)
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            x,y = event.pos
+            if myTextBox.rect.collidepoint(x,y): 
+                intro=False
+            
+    screen.fill(WHITE)
+    myTextBox.display(screen)
+    draw_text(text=f'Start Game', color=GREEN, font_size=24, x=500, y=200)
+    draw_text(text=f'Instructions: Collect dots to get bigger,\n the bigger square can eat the other and win.', 
+    color=RED, font_size=24, x=50, y=300)
+    pygame.display.update()
+    clock.tick(15)
+    
 ################################################################################
 # GAME LOOP
 ################################################################################
@@ -99,8 +134,8 @@ for i in range(30):
 # Run until the user asks to quit
 
 random_circle = random.choice(circles)
-random_y=random_circle.y
-random_x=random_circle.x
+random_y = random_circle.y
+random_x = random_circle.x
 
 running = True
 while running:
@@ -130,8 +165,8 @@ while running:
 
     # Update the target
 
-
-
+    #target_y += (target_y-random_y) * enemy_velocity
+    #target_x += (target_x - random_x) * enemy_velocity
     #if is_colliding(target_x, target_y, random_x, random_y, ENEMY_WIDTH, ENEMY_HEIGHT, ):
     #    target_x=250
      #   target_y=250
