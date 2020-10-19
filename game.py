@@ -1,8 +1,8 @@
 import time
 import pygame
 import random
+import pygame.math as math
 
-# Initialize Pygame
 pygame.init()
 pygame.display.set_caption('Get Big')
 
@@ -39,13 +39,13 @@ def main():
     # Player Variables
     player_x = 50
     player_y = 50
+    velocity= 15
 
     # Target Variables
     target_x = 600
     target_y = 750
-    points = 0
-    velocity = 10
-    enemy_velocity = 10
+    target_pos = math.Vector2(target_x, target_y)
+
     points = 0
     enemy_points = 0
 
@@ -98,8 +98,7 @@ def main():
 
     intro = True
     myTextBox = TextBox(500, 200, 100, 200, WHITE)
-    boxes = [myTextBox]
-    myTextBox2 = TextBox(500, 400, 100, 200, WHITE)
+    myTextBox2 = TextBox(500, 500, 400, 400, WHITE)
     myTextBox3 = TextBox(500, 600, 100, 200, WHITE)
 
     while intro:
@@ -129,8 +128,6 @@ def main():
         current_circle=Circle()
         current_circle.size=random.choice(sizes)
         circles.append(current_circle)
-
-    # Run until the user asks to quit
 
     random_circle = random.choice(circles)
     random_y = random_circle.y
@@ -173,27 +170,34 @@ def main():
         elif player_x > SCREEN_WIDTH:
             player_x = SCREEN_WIDTH
 
+        if target_player == False: 
+            dx, dy = (random_x - target_pos.x, random_y - target_pos.y)
+            stepx, stepy = (dx / 25., dy / 25.)
+            target_velocity= math.Vector2(target_pos.x + stepx, target_pos.y + stepy)
+
+        else:
+            dx, dy = (player_x - target_pos.x, player_y - target_pos.y)
+            stepx, stepy = (dx / 25., dy / 25.)
+            target_velocity= math.Vector2(target_pos.x + stepx, target_pos.y + stepy)
+
+        target_pos = target_velocity
+        target_player = False
+        target_x=target_pos.x
+        target_y=target_pos.y
+
         if target_y < 0:
-            target_y = 0
-        elif is_colliding(target_x, target_y, random_x, random_y, ENEMY_WIDTH, ENEMY_HEIGHT, random_size,random_size) and target_x > 0 and target_y>0:
-            target_x += random.randint(-10,10)
-            target_y += random.randint(-10,10)
-        elif not is_colliding(target_x, target_y, random_x, random_y, ENEMY_WIDTH, ENEMY_HEIGHT, random_size,random_size) and target_x>0 and target_y>0:
-            target_y -= random_y/30
-            target_x -= random_x/30
-        if time_elapsed > 500:
-            target_y = target_y
-            target_x = target_x
-            target_y += random.randint(-10,10)
-            target_y += random.randint(-10,10)
+            target_velocity = math.Vector2(0, 10)
+            target_y=10
+        #If target is colliding
+        elif is_colliding(target_x, target_y, random_x, random_y, ENEMY_WIDTH, ENEMY_HEIGHT, random_size,random_size):
+            target_player = True
 
         if target_y > SCREEN_HEIGHT:
-            target_y = SCREEN_HEIGHT
+            target_velocity = math.Vector2(0, SCREEN_HEIGHT)
         if target_x < 0: 
-            target_x = 0
-            target_x += 10
+            target_velocity = math.Vector2(10, 0)
         elif target_x > SCREEN_WIDTH:
-            target_x = SCREEN_WIDTH
+            target_velocity = math.Vector2(SCREEN_WIDTH, 0)
        
         # If player collides with target, reset it & increment points
         if is_colliding(player_x, player_y, target_x, target_y, CHARACTER_WIDTH, CHARACTER_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT):
@@ -241,7 +245,7 @@ def main():
                     enemy_points += 10
 
         if enemy_dead==False:
-            pygame.draw.rect(screen, RED, (target_x, target_y, ENEMY_WIDTH, ENEMY_HEIGHT))
+            pygame.draw.rect(screen, RED, (target_pos.x, target_pos.y, ENEMY_WIDTH, ENEMY_HEIGHT))
         elif enemy_dead==True:
             player_wins = True
             running = False
@@ -297,7 +301,7 @@ def main():
         myTextBox2.display(screen)
         myTextBox3.display(screen)
         draw_text(text=f'Game Over!, You Lose!', color=RED, font_size=35, x=500, y=200)
-        draw_text(text=f'Play Again?', color=BLACK, font_size=35, x=500, y=400)
+        draw_text(text=f'Play Again?', color=BLACK, font_size=35, x=500, y=250)
         draw_text(text=f'Quit', color=BLACK, font_size=35, x=500, y=600)
         pygame.display.update()
         clock.tick(15)
