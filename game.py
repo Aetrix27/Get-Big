@@ -114,9 +114,9 @@ def main():
                 
         screen.fill(WHITE)
         myTextBox.display(screen)
-        draw_text(text=f'Start Game', color=GREEN, font_size=24, x=500, y=200)
+        draw_text(text=f'Start Game', color=GREEN, font_size=30, x=500, y=200)
         draw_text(text=f'Instructions: Collect dots to get bigger, the bigger square can eat the other and win.', 
-        color=RED, font_size=24, x=50, y=300)
+        color=RED, font_size= 30, x=50, y=300)
         pygame.display.update()
         clock.tick(15)
         
@@ -204,8 +204,7 @@ def main():
             elif(enemy_points > points):
                 player_dead= True
         
-        # Fill screen with white
-        screen.fill(WHITE)
+        screen.fill(((0,255,255)))
         for circle in circles:
             circle.draw()
         
@@ -255,7 +254,6 @@ def main():
 
         # Draw the points
         draw_text(text=f'Score: {points}', color=BLACK, font_size=24, x=20, y=20)
-        # Update the game display
         pygame.display.update() 
 
     while player_wins == True:
