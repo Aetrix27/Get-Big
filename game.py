@@ -162,12 +162,12 @@ def main():
         # If target went off the screen, reset it
         if player_y < 0:
             player_y = 0
-        elif player_y > SCREEN_HEIGHT:
+        if player_y > SCREEN_HEIGHT:
             player_y = SCREEN_HEIGHT
 
         if player_x < 0: 
             player_x = 0
-        elif player_x > SCREEN_WIDTH:
+        if player_x > SCREEN_WIDTH:
             player_x = SCREEN_WIDTH
 
         if target_player == False: 
@@ -278,7 +278,7 @@ def main():
         myTextBox2.display(screen)
         myTextBox3.display(screen)
         draw_text(text=f'Game Over!, You Win!', color=GREEN, font_size=35, x=500, y=200)
-        draw_text(text=f'Play Again?', color=BLACK, font_size=35, x=500, y=400)
+        draw_text(text=f'Play Again?', color=BLACK, font_size=35, x=500, y=250)
         draw_text(text=f'Quit', color=BLACK, font_size=35, x=500, y=600)
         pygame.display.update()
         clock.tick(15)
