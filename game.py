@@ -101,6 +101,24 @@ def main():
         img = font.render(text, True, color)
         screen.blit(img, (x, y))
 
+    def eatCircle(circle, width, height, points, target_x, target_y, circles):
+        for circle in circles:
+            if is_colliding(target_x, target_y, circle.x, circle.y, width, height, circle.size, circle.size):
+                circles.remove(circle)
+                if circle.size == 10:
+                    width += 2
+                    height += 2
+                    points += 2
+                elif circle.size == 15:
+                    width += 5
+                    height += 5
+                    points += 5
+                elif circle.size == 20:
+                    width += 10
+                    height += 10
+                    points += 10
+        return width, height, circles, points
+
     def quitGame(p_wins, e_wins, clock):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -260,37 +278,11 @@ def main():
         for circle in circles:
             circle.draw()
 
-        for circle in circles:
-            if is_colliding(player_x, player_y, circle.x, circle.y, CHARACTER_WIDTH, CHARACTER_HEIGHT, circle.size, circle.size):
-                circles.remove(circle)
-                if circle.size == 10:
-                    CHARACTER_WIDTH += 2
-                    CHARACTER_HEIGHT += 2
-                    points += 2
-                elif circle.size == 15:
-                    CHARACTER_WIDTH += 5
-                    CHARACTER_HEIGHT += 5
-                    points += 5
-                elif circle.size == 20:
-                    CHARACTER_WIDTH += 10
-                    CHARACTER_HEIGHT += 10
-                    points += 10
+        CHARACTER_WIDTH, CHARACTER_HEIGHT, circles, points = eatCircle(circle, CHARACTER_WIDTH, CHARACTER_HEIGHT,
+                                                                       points, player_x, player_y, circles)
 
-        for circle in circles:
-            if is_colliding(target_x, target_y, circle.x, circle.y, ENEMY_WIDTH, ENEMY_HEIGHT, circle.size, circle.size):
-                circles.remove(circle)
-                if circle.size == 10:
-                    ENEMY_WIDTH += 2
-                    ENEMY_HEIGHT += 2
-                    enemy_points += 2
-                elif circle.size == 15:
-                    ENEMY_WIDTH += 5
-                    ENEMY_HEIGHT += 5
-                    enemy_points += 5
-                elif circle.size == 20:
-                    ENEMY_WIDTH += 10
-                    ENEMY_HEIGHT += 10
-                    enemy_points += 10
+        ENEMY_WIDTH, ENEMY_HEIGHT, circles, enemy_points = eatCircle(circle, ENEMY_WIDTH, ENEMY_HEIGHT,
+                                                                     enemy_points, target_x, target_y, circles)
 
         if enemy_dead == False:
             pygame.draw.rect(screen, RED, (target_pos.x,
