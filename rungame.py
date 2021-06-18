@@ -124,7 +124,7 @@ def quitGame(p_wins, e_wins, clock):
 
 
 def is_colliding(x1, y1, x2, y2, width, height, width2, height2):
-    #Will return true if two shapes are colliding, and if not it will return false
+    # Will return true if two shapes are colliding, and if not it will return false
     # If one rectangle is on left side of the other
     if (x1 >= x2 + width2) or (x2 >= x1 + width):
         return False
